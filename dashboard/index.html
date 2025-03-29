@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: #181818;
+            color: white;
+        }
+        .sidebar {
+            width: 260px;
+            background-color: #222;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .logo {
+            width: auto;
+            height: 100px;
+        }
+
+        .sidebar a {
+            width: 100%;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border: 2px solid #c200cc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .sidebar a:hover {
+            background: #c200cc;
+            box-shadow: 0 0 15px #c200cc;
+        }
+        .content {
+            flex: 1;
+            padding: 40px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <img src="https://i.ibb.co/XZyvjN2B/output-onlinepngtools.png" alt="Logo" class="logo">
+        <p id="coins">Coins</p>
+        <a href="dashboard">Dashboard</a>
+        <a href="shop">Shop</a>
+        <a href="earncoins">Earn Coins</a>
+        <a href="referrals">Referrals</a>
+    </div>
+    <div class="content">
+        <h1>Willkommen im Dashboard</h1>
+        <p>Wähle eine Option aus der Seitenleiste.</p>
+    </div>
+    <script>
+      window.onload = async function() {
+        const API_URL = "https://blearn-server.onrender.com/api/auth";
+        const authToken = localStorage.getItem("authToken");
+        const email = localStorage.getItem("email")
+        
+        try {
+          const res = await fetch(API_URL + "/checktoken", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: authToken, email: email })
+          });
+          
+          const data = await res.json();
+          if(res.ok && data.msg === "success") {
+            document.getElementById("coins").innerHTML = "You have " + data.coins + " Coins"
+          } else {
+            document.getElementById("coins").innerHTML = "Error while connecting to server"
+          }
+        } catch (error) {
+          document.getElementById("coins").innerHTML = "Error while connecting to server"
+        } 
+        
+      };
+  </script>
+</body>
+</html>
