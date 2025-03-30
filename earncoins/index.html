@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script><script>linkvertise(1328821, {whitelist: [], blacklist: ["dashboard","shop"]});</script>
+    <script src="https://publisher.linkvertise.com/cdn/linkvertise.js"></script><script>linkvertise(1328821, {whitelist: [], blacklist: ["dashboard", "shop", "referrals"]});</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
@@ -71,13 +71,13 @@
         <p id="coins">Coins</p>
         <a href="./dashboard">Dashboard</a>
         <a href="./shop">Shop</a>
-        <a href="./earncoins">Earn Coins</a>
+        <a>Earn Coins</a>
         <a href="./referrals">Referrals</a>
     </div>
       <div class="content">
           <div class="container">
           <h1>Verdiene Coins!</h1>
-          <a id="button" class="button" href="#" onclick="window.close();">Coins verdienen</a>
+          <a id="button" class="button" href="#">Coins verdienen</a>
           <div id="message"></div>
       </div>
     </div>
@@ -105,6 +105,7 @@
             document.getElementById("coins").innerHTML = "You have " + data.coins + " Coins"
           } else {
             document.getElementById("coins").innerHTML = "Error while connecting to server"
+            window.location.href = "/login";
           }
         } catch (error) {
           document.getElementById("coins").innerHTML = "Error while connecting to server"

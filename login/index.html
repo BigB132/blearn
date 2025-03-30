@@ -31,6 +31,7 @@
             border-radius: 5px;
             background: #333;
             color: white;
+            border: 1px solid #555;
         }
         button {
             background: #c200cc;
@@ -47,6 +48,27 @@
             background: #a000aa;
             box-shadow: 0 0 15px #c200cc;
         }
+        .message {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message.show {
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .success {
+            background: #28a745;
+            color: white;
+        }
+        .error {
+            background: #dc3545;
+            color: white;
+        }
         #codeForm {
             display: none;
         }
@@ -59,6 +81,7 @@
             <input type="email" id="loginEmail" placeholder="E-Mail" required>
             <button type="submit">Login</button>
         </form>
+        <p id="message" class="message"></p>
 
         <form id="codeForm">
             <h3>Verifizierungscode</h3>
@@ -70,6 +93,13 @@
     <script>
         const API_URL = "https://blearn-server.onrender.com/api/auth";
         let userEmail = "";
+
+        function showMessage(elementId, text, type) {
+            const messageEl = document.getElementById(elementId);
+            messageEl.textContent = text;
+            messageEl.className = `message ${type} show`;
+            messageEl.style.display = "block";
+        }
 
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -84,14 +114,15 @@
 
                 const data = await res.json();
                 if (res.ok) {
+                    showMessage("message", "Code gesendet! Überprüfe deine E-Mail.", "success");
                     document.getElementById("loginForm").style.display = "none";
                     document.getElementById("codeForm").style.display = "block";
                 } else {
-                    alert(data.msg || "Login fehlgeschlagen!");
+                    showMessage("message", data.msg || "Login fehlgeschlagen!", "error");
                 }
             } catch (error) {
                 console.error("Fehler beim Login:", error);
-                alert("Fehler beim Login!");
+                showMessage("message", "Netzwerkfehler! Versuche es erneut.", "error");
             }
         });
 
@@ -108,17 +139,39 @@
 
                 const data = await res.json();
                 if (res.ok && data.msg === "success") {
+                    showMessage("message", "Erfolgreich eingeloggt!", "success");
                     localStorage.setItem("authToken", data.token);
                     localStorage.setItem("email", userEmail);
-                    window.location.href = "dashboard";
+                    setTimeout(() => window.location.href = "dashboard", 1000);
                 } else {
-                    alert(data.msg || "Login fehlgeschlagen!");
+                    showMessage("message", "Code ungültig!", "error");
                 }
             } catch (error) {
-                console.error("Fehler beim Login:", error);
-                alert("Fehler beim Login!");
+                console.error("Fehler bei der Verifizierung:", error);
+                showMessage("message", "Netzwerkfehler! Versuche es erneut.", "error");
             }
         });
     </script>
+    <script>
+      window.onload = async function() {
+        const API_URL = "https://blearn-server.onrender.com/api/auth";
+        const authToken = localStorage.getItem("authToken");
+        const email = localStorage.getItem("email");
+
+        try {
+            const res = await fetch(API_URL + "/checktoken", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token: authToken, email: email })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.msg === "success") {
+                window.location.href = "/dashboard";
+
+            }
+        } catch (error) {};
+    };
+  </script>
 </body>
 </html>

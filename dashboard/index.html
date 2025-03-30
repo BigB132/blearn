@@ -67,26 +67,33 @@
       window.onload = async function() {
         const API_URL = "https://blearn-server.onrender.com/api/auth";
         const authToken = localStorage.getItem("authToken");
-        const email = localStorage.getItem("email")
-        
+        const email = localStorage.getItem("email");
+
+        if (!authToken || !email) {
+            window.location.href = "/login"; // Leite zur Login-Seite weiter
+            return;
+        }
+
         try {
-          const res = await fetch(API_URL + "/checktoken", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: authToken, email: email })
-          });
-          
-          const data = await res.json();
-          if(res.ok && data.msg === "success") {
-            document.getElementById("coins").innerHTML = "You have " + data.coins + " Coins"
-          } else {
-            document.getElementById("coins").innerHTML = "Error while connecting to server"
-          }
+            const res = await fetch(API_URL + "/checktoken", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token: authToken, email: email })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.msg === "success") {
+                document.getElementById("coins").innerHTML = "You have " + data.coins + " Coins";
+            } else {
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("email");
+                window.location.href = "/login"; // Bei Fehler zum Login weiterleiten
+            }
         } catch (error) {
-          document.getElementById("coins").innerHTML = "Error while connecting to server"
-        } 
-        
-      };
+            document.getElementById("coins").innerHTML = "Error while connecting to server";
+        }
+    };
   </script>
 </body>
+</html>
 </html>
