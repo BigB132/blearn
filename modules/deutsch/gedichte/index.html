@@ -1,0 +1,168 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stilmittel</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #121212;
+          color: #ffffff;
+          text-align: center;
+          padding: 20px;
+      }
+      table {
+          width: 80%;
+          margin: 20px auto;
+          border-collapse: collapse;
+          background-color: #1e1e1e;
+          border-radius: 8px;
+          overflow: hidden;
+      }
+      th, td {
+          padding: 15px;
+          border: 1px solid #333;
+          text-align: center;
+      }
+      th {
+          background-color: #333;
+      }
+      select {
+          background-color: #222;
+          color: white;
+          border: 1px solid #444;
+          padding: 5px;
+          text-align: center;
+          border-radius: 4px;
+      }
+      button {
+          margin-top: 20px;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          background-color: #6200ea;
+          color: white;
+          cursor: pointer;
+      }
+      button:hover {
+          background-color: #3700b3;
+      }
+      .correct {
+          background-color: #2e7d32;
+      }
+      .incorrect {
+          background-color: #b71c1c;
+      }
+      .solution {
+          color: #b71c1c;
+          font-size: 0.9em;
+    </style>
+</head>
+<body>
+    <h1>Die Wiederholungs-Stilmittel</h1>
+    <table>
+      <tbody>
+        <tr>
+          <th>Stilmittel</th>
+          <th>Erklärung</th>
+          <th>Beispiel</th>
+        </tr>
+        <tr>
+          <th>Alliteration</th>
+          <td><select id="1"><option value="Anfangsbuchstaben sind gleich">Anfangsbuchstaben sind gleich</option><option value="2">Alle Anfangsbuchstaben sind gleich</option><option value="3">Wörter am Anfang des Verses werden wiederholt</option><option value="4">Die erste Wiederholung steht am Ende des Verses, die zweite am Anfang des nächsten Verses</option><option value="5">Wörter am Ende des Verses werden wiederholt</option><option value="6">Gleicher Satzbau (Satzglieder)</option></select></td>
+          <td><select id="2"><option value="Müller Milch schmeckt">Müller Milch schmeckt</option><option value="2">Milch macht müde Männer munter</option><option value="3">Kommt schnell. Kommt gut.</option><option value="4">Am Ende steht die Anna. Anna, das Mädchen von nebenan.</option><option value="5">Essen gut. Alles gut.</option><option value="6">Hier bin ich Mensch, hier kauf ich ein.</option></select></td>
+        </tr>
+        <tr>
+          <th>Tautogramm</th>
+          <td><select id="3"><option value="1">Anfangsbuchstaben sind gleich</option><option value="Alle Anfangsbuchstaben sind gleich">Alle Anfangsbuchstaben sind gleich</option><option value="3">Wörter am Anfang des Verses werden wiederholt</option><option value="4">Die erste Wiederholung steht am Ende des Verses, die zweite am Anfang des nächsten Verses</option><option value="5">Wörter am Ende des Verses werden wiederholt</option><option value="6">Gleicher Satzbau (Satzglieder)</option></select></td>
+          <td><select id="4"><option value="1">Müller Milch schmeckt</option><option value="Milch macht müde Männer munter">Milch macht müde Männer munter</option><option value="3">Kommt schnell. Kommt gut.</option><option value="4">Am Ende steht die Anna. Anna, das Mädchen von nebenan.</option><option value="5">Essen gut. Alles gut.</option><option value="6">Hier bin ich Mensch, hier kauf ich ein.</option></select></td>
+        </tr>
+        <tr>
+          <th>Anapher</th>
+          <td><select id="5"><option value="1">Anfangsbuchstaben sind gleich</option><option value="2">Alle Anfangsbuchstaben sind gleich</option><option value="Wörter am Anfang des Verses werden wiederholt">Wörter am Anfang des Verses werden wiederholt</option><option value="4">Die erste Wiederholung steht am Ende des Verses, die zweite am Anfang des nächsten Verses</option><option value="5">Wörter am Ende des Verses werden wiederholt</option><option value="6">Gleicher Satzbau (Satzglieder)</option></select></td>
+          <td><select id="6"><option value="1">Müller Milch schmeckt</option><option value="2">Milch macht müde Männer munter</option><option value="Kommt schnell. Kommt gut.">Kommt schnell. Kommt gut.</option><option value="4">Am Ende steht die Anna. Anna, das Mädchen von nebenan.</option><option value="5">Essen gut. Alles gut.</option><option value="6">Hier bin ich Mensch, hier kauf ich ein.</option></select></td>
+        </tr>
+        <tr>
+          <th>Anadiplose</th>
+          <td><select id="7"><option value="1">Anfangsbuchstaben sind gleich</option><option value="2">Alle Anfangsbuchstaben sind gleich</option><option value="3">Wörter am Anfang des Verses werden wiederholt</option><option value="Die erste Wiederholung steht am Ende des Verses, die zweite am Anfang des nächsten Verses">Die erste Wiederholung steht am Ende des Verses, die zweite am Anfang des nächsten Verses</option><option value="5">Wörter am Ende des Verses werden wiederholt</option><option value="6">Gleicher Satzbau (Satzglieder)</option></select></td>
+          <td><select id="8"><option value="1">Müller Milch schmeckt</option><option value="2">Milch macht müde Männer munter</option><option value="3">Kommt schnell. Kommt gut.</option><option value="Am Ende steht die Anna. Anna, das Mädchen von nebenan.">Am Ende steht die Anna. Anna, das Mädchen von nebenan.</option><option value="5">Essen gut. Alles gut.</option><option value="6">Hier bin ich Mensch, hier kauf ich ein.</option></select></td>
+        </tr>
+        <tr>
+          <th>Epipher</th>
+          <td><select id="9"><option value="1">Anfangsbuchstaben sind gleich</option><option value="2">Alle Anfangsbuchstaben sind gleich</option><option value="3">Wörter am Anfang des Verses werden wiederholt</option><option value="4">Die erste Wiederholung steht am Ende des Verses, die zweite am Anfang des nächsten Verses</option><option value="Wörter am Ende des Verses werden wiederholt">Wörter am Ende des Verses werden wiederholt</option><option value="6">Gleicher Satzbau (Satzglieder)</option></select></td>
+          <td><select id="10"><option value="1">Müller Milch schmeckt</option><option value="2">Milch macht müde Männer munter</option><option value="3">Kommt schnell. Kommt gut.</option><option value="4">Am Ende steht die Anna. Anna, das Mädchen von nebenan.</option><option value="Essen gut. Alles gut.">Essen gut. Alles gut.</option><option value="6">Hier bin ich Mensch, hier kauf ich ein.</option></select></td>
+        </tr>
+        <tr>
+          <th>Parallelismus</th>
+          <td><select id="11"><option value="1">Anfangsbuchstaben sind gleich</option><option value="2">Alle Anfangsbuchstaben sind gleich</option><option value="3">Wörter am Anfang des Verses werden wiederholt</option><option value="4">Die erste Wiederholung steht am Ende des Verses, die zweite am Anfang des nächsten Verses</option><option value="5">Wörter am Ende des Verses werden wiederholt</option><option value="Gleicher Satzbau (Satzglieder)">Gleicher Satzbau (Satzglieder)</option></select></td>
+          <td><select id="12"><option value="1">Müller Milch schmeckt</option><option value="2">Milch macht müde Männer munter</option><option value="3">Kommt schnell. Kommt gut.</option><option value="4">Am Ende steht die Anna. Anna, das Mädchen von nebenan.</option><option value="5">Essen gut. Alles gut.</option><option value="Hier bin ich Mensch, hier kauf ich ein.">Hier bin ich Mensch, hier kauf ich ein.</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+    <button onclick="checkAnswers()">Überprüfen</button>
+
+    <script>
+      const correctAnswers = {
+        1: "anfangsbuchstaben sind gleich",
+        2: "müller milch schmeckt",
+        3: "alle anfangsbuchstaben sind gleich",
+        4: "milch macht müde männer munter",
+        5: "wörter am anfang des verses werden wiederholt",
+        6: "kommt schnell. kommt gut.",
+        7: "die erste wiederholung steht am ende des verses, die zweite am anfang des nächsten verses",
+        8: "am ende steht die anna. anna, das mädchen von nebenan.",
+        9: "wörter am ende des verses werden wiederholt",
+        10: "essen gut. alles gut.",
+        11: "gleicher satzbau (satzglieder)",
+        12: "hier bin ich mensch, hier kauf ich ein."
+      };
+
+      function checkAnswers() {
+        Object.keys(correctAnswers).forEach((id) => {
+          let selectField = document.getElementById(id);
+          let userAnswer = selectField.value.trim().toLowerCase();
+          let correctAnswer = correctAnswers[id];
+
+          let solutionSpan = document.getElementById(id + "_solution");
+          if (!solutionSpan) {
+            solutionSpan = document.createElement("span");
+            solutionSpan.id = id + "_solution";
+            solutionSpan.className = "solution";
+            selectField.parentNode.appendChild(document.createElement("br"));
+            selectField.parentNode.appendChild(solutionSpan);
+          }
+
+          if (userAnswer === correctAnswer) {
+            selectField.className = "correct";
+            solutionSpan.textContent = "";
+          } else {
+            selectField.className = "incorrect";
+            solutionSpan.textContent = "Richtige Antwort: " + correctAnswer;
+          }
+        });
+      }
+    </script>
+    <script>
+      function shuffleDropdownOptions() {
+        const dropdowns = document.querySelectorAll('select');
+
+        dropdowns.forEach(dropdown => {
+            const options = Array.from(dropdown.options);
+            shuffleArray(options);  
+
+            options.forEach(option => {
+                dropdown.appendChild(option);
+            });
+        });
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', shuffleDropdownOptions);
+
+</script>
+</body>
