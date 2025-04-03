@@ -142,7 +142,7 @@
                     showMessage("message", "Erfolgreich eingeloggt!", "success");
                     localStorage.setItem("authToken", data.token);
                     localStorage.setItem("email", userEmail);
-                    setTimeout(() => window.location.href = "https://blearn.netlify.app/dashboard", 1000);
+                    setTimeout(() => window.location.href = "dashboard", 1000);
                 } else {
                     showMessage("message", "Code ungültig!", "error");
                 }
@@ -167,7 +167,7 @@
 
             const data = await res.json();
             if (res.ok && data.msg === "success") {
-                window.location.href = "https://blearn.netlify.app/dashboard";
+                window.location.href = "/dashboard";
 
             }
         } catch (error) {};

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation</title>
+    <style>
+        :root {
+            --primary-color: #c200cc;
+            --secondary-color: #9900a3;
+            --background-color: #222;
+            --text-color: white;
+            --sidebar-width: 280px;
+            --header-height: 60px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: #181818;
+            scroll-behavior: smooth;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background-color: #222;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .search-container {
+            margin-left: auto;
+            width: 300px;
+        }
+        
+        #search {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #333;
+            color: white;
+        }
+        
+        /* Loading spinner */
+        .loader {
+            border: 5px solid #333;
+            border-radius: 50%;
+            border-top: 5px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Error message */
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 107, 107, 0.1);
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--background-color);
+            border-right: 1px solid #333;
+            padding: 20px;
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
+        .category {
+            margin-bottom: 15px;
+        }
+        
+        .category-title {
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            color: white;
+            transition: color 0.3s;
+        }
+        
+        .category-title:hover {
+            color: var(--primary-color);
+        }
+        
+        .subcategory-list {
+            margin-left: 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .subcategory-list.active {
+            max-height: 500px;
+        }
+        
+        .subcategory {
+            padding: 12px;
+            margin: 5px 0;
+            cursor: pointer;
+            display: block;
+            text-decoration: none;
+            color: var(--text-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+        
+        .subcategory:hover {
+            background: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+        
+        /* Chapter Links */
+        .chapter-list {
+            margin-left: 15px;
+            padding-left: 10px;
+            border-left: 1px solid #444;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .chapter-list.active {
+            max-height: 500px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .chapter-link {
+            display: block;
+            padding: 5px 0;
+            text-decoration: none;
+            color: #ccc;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        
+        .chapter-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+        
+        .category-title.active .chevron {
+            transform: rotate(90deg);
+        }
+        
+        /* Main Content */
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 40px;
+        }
+        
+        .doc-section {
+            margin-bottom: 40px;
+            display: none;
+        }
+        
+        .doc-section.active {
+            display: block;
+        }
+        
+        .doc-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+            color: var(--primary-color);
+        }
+        
+        .doc-content {
+            font-size: 16px;
+        }
+        
+        .doc-content p {
+            margin-bottom: 15px;
+        }
+        
+        .doc-content code {
+            background-color: #333;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 14px;
+            color: #f8f8f8;
+        }
+        
+        .doc-content pre {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            color: #f8f8f8;
+        }
+        
+        .doc-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .doc-content h3 {
+            color: #c200cc;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-top: 25px; /* Added padding for scroll offset */
+            scroll-margin-top: 80px; /* For smooth scrolling with header offset */
+        }
+        
+        /* Mobile responsiveness */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 15px;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 99;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-toggle">☰</button>
+        <div class="logo">Documentation</div>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Search documentation...">
+        </div>
+    </header>
+    
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Documentation</h3>
+            <div id="categories-container">
+                <!-- Categories will be loaded from API -->
+                <div class="loader" id="sidebar-loader"></div>
+            </div>
+        </aside>
+        
+        <main class="content" id="main-content">
+            <!-- Documentation content will be loaded here -->
+            <div class="doc-section active" id="welcome">
+                <h1 class="doc-title">Welcome to Documentation</h1>
+                <div class="doc-content">
+                    <p>Select a topic from the sidebar to get started, or use the search bar to find specific information.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // API endpoint for documentation data - CHANGE THIS URL to your actual API server URL
+        const API_URL = 'https://automatic-acorn-pjjv67wwrr9j29945-3000.app.github.dev/api/documentation';
+        
+        // Initialize the documentation system
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling to the whole document
+            document.documentElement.style.scrollBehavior = 'smooth';
+            
+            // Show a status message in the main content area
+            const mainContent = document.getElementById('main-content');
+            const welcomeSection = document.getElementById('welcome');
+            welcomeSection.innerHTML = `
+                <h1 class="doc-title">Welcome to Documentation</h1>
+                <div class="doc-content">
+                    <p>Connecting to API server...</p>
+                    <div class="loader"></div>
+                </div>
+            `;
+            
+            // Fetch documentation structure from API
+            fetchDocumentationStructure();
+            
+            // Setup search with debounce to avoid too many requests
+            const searchInput = document.getElementById('search');
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(handleSearch, 300);
+            });
+            
+            // Mobile menu toggle
+            const menuToggle = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        });
+        
+        // Fetch the documentation structure from the API
+        async function fetchDocumentationStructure() {
+            const categoriesContainer = document.getElementById('categories-container');
+            const sidebarLoader = document.getElementById('sidebar-loader');
+            const welcomeSection = document.getElementById('welcome');
+            
+            try {
+                console.log(`Fetching from: ${API_URL}/structure`);
+                
+                const response = await fetch(`${API_URL}/structure`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`API returned status: ${response.status} - ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Received data:', data);
+                
+                sidebarLoader.style.display = 'none';
+                
+                // Update welcome message
+                welcomeSection.innerHTML = `
+                    <h1 class="doc-title">Welcome to Documentation</h1>
+                    <div class="doc-content">
+                        <p>Select a topic from the sidebar to get started, or use the search bar to find specific information.</p>
+                    </div>
+                `;
+                
+                // Populate sidebar with categories and subcategories
+                populateSidebar(data.categories);
+            } catch (error) {
+                console.error('Error fetching documentation structure:', error);
+                sidebarLoader.style.display = 'none';
+                
+                // Show error in sidebar
+                const errorElement = document.createElement('div');
+                errorElement.className = 'error-message';
+                errorElement.textContent = `Failed to load documentation structure: ${error.message}`;
+                categoriesContainer.appendChild(errorElement);
+                
+                // Also show error in main content
+                welcomeSection.innerHTML = `
+                    <h1 class="doc-title">Connection Error</h1>
+                    <div class="error-message">
+                        <p>Could not connect to the documentation API server.</p>
+                        <p>Error: ${error.message}</p>
+                        <p>Please check that the server is running and accessible at:</p>
+                        <code>${API_URL}</code>
+                        <p style="margin-top: 20px;">
+                            <button onclick="fetchDocumentationStructure()" style="padding: 8px 16px; background: var(--primary-color); border: none; color: white; border-radius: 4px; cursor: pointer;">
+                                Try Again
+                            </button>
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Populate the sidebar with categories, subcategories, and chapters
+        function populateSidebar(categories) {
+            const categoriesContainer = document.getElementById('categories-container');
+            categoriesContainer.innerHTML = ''; // Clear any existing content
+            
+            categories.forEach(category => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'category';
+                
+                const categoryTitle = document.createElement('div');
+                categoryTitle.className = 'category-title';
+                categoryTitle.innerHTML = `${category.name} <span class="chevron">›</span>`;
+                
+                const subcategoryList = document.createElement('div');
+                subcategoryList.className = 'subcategory-list';
+                
+                category.subcategories.forEach(subcategory => {
+                    const subcategoryContainer = document.createElement('div');
+                    
+                    const subcategoryLink = document.createElement('a');
+                    subcategoryLink.className = 'subcategory';
+                    subcategoryLink.textContent = subcategory.name;
+                    subcategoryLink.href = `#${subcategory.id}`;
+                    
+                    // Create chapter links if available
+                    const chapterList = document.createElement('div');
+                    chapterList.className = 'chapter-list';
+                    
+                    if (subcategory.chapters && subcategory.chapters.length > 0) {
+                        subcategory.chapters.forEach(chapter => {
+                            const chapterLink = document.createElement('a');
+                            chapterLink.className = 'chapter-link';
+                            chapterLink.textContent = chapter.name;
+                            chapterLink.href = `#${chapter.id}`;
+                            
+                            // Add click event for chapter navigation
+                            chapterLink.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                
+                                // First load the parent section if not already active
+                                fetchContent(subcategory.id);
+                                
+                                // Then scroll to the specific chapter after a short delay
+                                setTimeout(() => {
+                                    const targetElement = document.getElementById(chapter.id);
+                                    if (targetElement) {
+                                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }, 300);
+                            });
+                            
+                            chapterList.appendChild(chapterLink);
+                        });
+                    }
+                    
+                    // Show chapters when clicking on subcategory
+                    subcategoryLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        // Toggle active class for chapter list
+                        const allChapterLists = document.querySelectorAll('.chapter-list');
+                        allChapterLists.forEach(list => {
+                            if (list !== chapterList) {
+                                list.classList.remove('active');
+                            }
+                        });
+                        
+                        chapterList.classList.toggle('active');
+                        
+                        // Fetch and load the content from API
+                        fetchContent(subcategory.id);
+                    });
+                    
+                    subcategoryContainer.appendChild(subcategoryLink);
+                    subcategoryContainer.appendChild(chapterList);
+                    subcategoryList.appendChild(subcategoryContainer);
+                });
+                
+                categoryTitle.addEventListener('click', () => {
+                    categoryTitle.classList.toggle('active');
+                    subcategoryList.classList.toggle('active');
+                });
+                
+                categoryElement.appendChild(categoryTitle);
+                categoryElement.appendChild(subcategoryList);
+                categoriesContainer.appendChild(categoryElement);
+            });
+        }
+        
+        // Fetch content for a section from the API
+        async function fetchContent(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.doc-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Check if we already have this section in the DOM
+            let section = document.getElementById(sectionId);
+            
+            // If the section exists, just show it
+            if (section) {
+                section.classList.add('active');
+                return;
+            }
+            
+            // Create a new section with a loader
+            section = document.createElement('div');
+            section.className = 'doc-section active';
+            section.id = sectionId;
+            
+            const loader = document.createElement('div');
+            loader.className = 'loader';
+            section.appendChild(loader);
+            
+            document.getElementById('main-content').appendChild(section);
+            
+            try {
+                console.log(`Fetching content for: ${sectionId}`);
+              
+                const token = localStorage.getItem("authToken");
+                const email = localStorage.getItem("email");
+                
+                // Fetch the content from the API
+                const response = await fetch(`${API_URL}/content/${sectionId}/${email}/${token}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                console.log('Content response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`API returned status: ${response.status} - ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Received content data length:', data.content.length);
+                
+                // Update the section with the fetched content
+                section.innerHTML = data.content;
+                
+                // Close sidebar on mobile
+                if (window.innerWidth <= 768) {
+                    document.querySelector('.sidebar').classList.remove('active');
+                }
+            } catch (error) {
+                console.error(`Error fetching content for section ${sectionId}:`, error);
+                
+                section.innerHTML = `
+                    <h1 class="doc-title">Error</h1>
+                    <div class="error-message">
+                        <p>Failed to load content for section "${sectionId}"</p>
+                        <p>Error: ${error.message}</p>
+                        <p style="margin-top: 20px;">
+                            <button onclick="fetchContent('${sectionId}')" style="padding: 8px 16px; background: var(--primary-color); border: none; color: white; border-radius: 4px; cursor: pointer;">
+                                Try Again
+                            </button>
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Handle search functionality
+        async function handleSearch() {
+            const query = document.getElementById('search').value.toLowerCase();
+            
+            if (query.length < 2) {
+                return;
+            }
+            
+            const mainContent = document.getElementById('main-content');
+            
+            // Clear previous results
+            const existingResults = document.getElementById('search-results');
+            if (existingResults) {
+                mainContent.removeChild(existingResults);
+            }
+            
+            // Hide all other sections
+            const sections = document.querySelectorAll('.doc-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Create results section with loader
+            const resultsSection = document.createElement('div');
+            resultsSection.className = 'doc-section active';
+            resultsSection.id = 'search-results';
+            
+            const loader = document.createElement('div');
+            loader.className = 'loader';
+            resultsSection.appendChild(loader);
+            
+            mainContent.appendChild(resultsSection);
+            
+            try {
+                console.log(`Searching for: "${query}"`);
+                
+                // Fetch search results from API
+                const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                console.log('Search response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`API returned status: ${response.status} - ${response.statusText}`);
+                }
+                
+                const results = await response.json();
+                console.log('Search results:', results);
+                
+                // Display the search results
+                displaySearchResults(results, query);
+            } catch (error) {
+                console.error('Error performing search:', error);
+                
+                resultsSection.innerHTML = `
+                    <h1 class="doc-title">Search Error</h1>
+                    <div class="error-message">
+                        <p>Failed to perform search for "${query}"</p>
+                        <p>Error: ${error.message}</p>
+                        <p style="margin-top: 20px;">
+                            <button onclick="handleSearch()" style="padding: 8px 16px; background: var(--primary-color); border: none; color: white; border-radius: 4px; cursor: pointer;">
+                                Try Again
+                            </button>
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display search results
+        function displaySearchResults(results, query) {
+            const resultsSection = document.getElementById('search-results');
+            
+            let resultsHTML = `
+                <h1 class="doc-title">Search Results for "${query}"</h1>
+                <div class="doc-content">
+            `;
+            
+            if (results.length === 0) {
+                resultsHTML += `<p>No results found for "${query}".</p>`;
+            } else {
+                resultsHTML += `<p>Found ${results.length} result${results.length !== 1 ? 's' : ''}:</p>`;
+                
+                results.forEach(result => {
+                    if (result.type === 'subcategory') {
+                        resultsHTML += `
+                            <div style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                                <h3>
+                                    <a href="#${result.id}" style="color: var(--primary-color); text-decoration: none;" 
+                                       onclick="fetchContent('${result.id}'); return false;">
+                                       ${result.name}
+                                    </a>
+                                </h3>
+                                <p style="font-size: 14px; color: #aaa;">Category: ${result.category}</p>
+                            </div>
+                        `;
+                    } else if (result.type === 'chapter') {
+                        resultsHTML += `
+                            <div style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+                                <h3>
+                                    <a href="#${result.id}" style="color: var(--primary-color); text-decoration: none;" 
+                                       onclick="(function(){
+                                           fetchContent('${result.parentId}');
+                                           setTimeout(function() {
+                                               document.getElementById('${result.id}').scrollIntoView({behavior: 'smooth'});
+                                           }, 300);
+                                           return false;
+                                       })()">
+                                       ${result.name}
+                                    </a>
+                                </h3>
+                                <p style="font-size: 14px; color: #aaa;">Section: ${result.parentName} (${result.category})</p>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            resultsHTML += '</div>';
+            resultsSection.innerHTML = resultsHTML;
+        }
+    </script>
+</body>
+</html>
