@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation Content Editor</title>
+    <style>
+        :root {
+            --primary-color: #c200cc;
+            --secondary-color: #9900a3;
+            --background-color: #222;
+            --text-color: white;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: #181818;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .editor-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .editor-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+        
+        .tool-btn {
+            padding: 8px 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .tool-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .section-field {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .section-field label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .section-field input, .section-field select {
+            width: 100%;
+            padding: 8px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+        }
+        
+        #editor {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+            font-family: monospace;
+            resize: vertical;
+        }
+        
+        .preview {
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 20px;
+            min-height: 400px;
+            overflow: auto;
+        }
+        
+        .preview h3 {
+            color: var(--primary-color);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .preview p {
+            margin-bottom: 15px;
+        }
+        
+        .preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .preview table th, .preview table td {
+            border: 1px solid #555;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .preview table th {
+            background-color: #444;
+        }
+        
+        .preview table tr:nth-child(even) {
+            background-color: #3a3a3a;
+        }
+        
+        .output-container {
+            margin-top: 20px;
+        }
+        
+        .output-container h2 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .copy-btn {
+            padding: 5px 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        #htmlOutput {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+            font-family: monospace;
+            resize: vertical;
+            white-space: pre-wrap;
+        }
+        
+        .clipboard-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .dialog {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+        }
+        
+        .dialog h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .dialog-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .dialog-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .dialog-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .dialog-btn-cancel {
+            background-color: #555;
+            color: white;
+        }
+        
+        .dialog-btn-confirm {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .table-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .table-controls input {
+            width: 60px;
+            padding: 5px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+        }
+        
+        .table-preview {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .color-picker select {
+            padding: 5px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Documentation Content Editor</h1>
+        
+        <div class="section-field">
+            <label for="sectionTitle">Section Title:</label>
+            <input type="text" id="sectionTitle" placeholder="Enter section title">
+        </div>
+        
+        <div class="section-field">
+            <label for="sectionId">Section ID:</label>
+            <input type="text" id="sectionId" placeholder="Enter unique section ID">
+        </div>
+        
+        <div class="editor-container">
+            <div class="editor-section">
+                <h2>Editor</h2>
+                
+                <div class="tools">
+                    <button class="tool-btn" onclick="insertHeading()">Heading</button>
+                    <button class="tool-btn" onclick="insertParagraph()">Paragraph</button>
+                    <button class="tool-btn" onclick="openTableDialog()">Table</button>
+                    <button class="tool-btn" onclick="insertFontColor()">Font Color</button>
+                </div>
+                
+                <textarea id="editor" placeholder="Start typing your content here..."></textarea>
+            </div>
+            
+            <div class="editor-section">
+                <h2>Preview</h2>
+                <div class="preview" id="preview"></div>
+            </div>
+        </div>
+        
+        <div class="output-container">
+            <h2>
+                Generated HTML Output
+                <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+            </h2>
+            <textarea id="htmlOutput" readonly></textarea>
+        </div>
+    </div>
+    
+    <div class="clipboard-message" id="clipboardMessage">Copied to clipboard!</div>
+    
+    <!-- Table Dialog -->
+    <div class="dialog-overlay" id="tableDialog">
+        <div class="dialog">
+            <h3>Insert Table</h3>
+            <div class="dialog-form">
+                <div class="table-controls">
+                    <div>
+                        <label for="tableRows">Rows:</label>
+                        <input type="number" id="tableRows" min="1" max="20" value="3">
+                    </div>
+                    <div>
+                        <label for="tableCols">Columns:</label>
+                        <input type="number" id="tableCols" min="1" max="10" value="3">
+                    </div>
+                    <button class="tool-btn" onclick="updateTablePreview()">Update Preview</button>
+                </div>
+                
+                <div class="table-preview" id="tablePreview"></div>
+                
+                <div class="dialog-buttons">
+                    <button class="dialog-btn dialog-btn-cancel" onclick="closeTableDialog()">Cancel</button>
+                    <button class="dialog-btn dialog-btn-confirm" onclick="insertTable()">Insert Table</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Font Color Dialog -->
+    <div class="dialog-overlay" id="colorDialog">
+        <div class="dialog">
+            <h3>Change Font Color</h3>
+            <div class="dialog-form">
+                <div class="color-picker">
+                    <label for="fontColor">Select Color:</label>
+                    <select id="fontColor">
+                        <option value="red">Red</option>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="purple">Purple</option>
+                        <option value="orange">Orange</option>
+                        <option value="yellow">Yellow</option>
+                        <option value="pink">Pink</option>
+                        <option value="cyan">Cyan</option>
+                        <option value="magenta">Magenta</option>
+                        <option value="#c200cc">Theme Purple</option>
+                    </select>
+                    <input type="color" id="customColor" value="#c200cc">
+                </div>
+                
+                <div>
+                    <label for="colorPreview">Preview:</label>
+                    <p id="colorPreview" style="color: #c200cc;">This is how your text will look with the selected color.</p>
+                </div>
+                
+                <div class="dialog-buttons">
+                    <button class="dialog-btn dialog-btn-cancel" onclick="closeColorDialog()">Cancel</button>
+                    <button class="dialog-btn dialog-btn-confirm" onclick="applyFontColor()">Apply Color</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize editor
+            updatePreview();
+            
+            // Update preview on editor change
+            document.getElementById('editor').addEventListener('input', updatePreview);
+            
+            // Update section title and ID dynamically
+            document.getElementById('sectionTitle').addEventListener('input', updateOutput);
+            document.getElementById('sectionId').addEventListener('input', updateOutput);
+            
+            // Set up color picker
+            const colorSelect = document.getElementById('fontColor');
+            const customColor = document.getElementById('customColor');
+            const colorPreview = document.getElementById('colorPreview');
+            
+            colorSelect.addEventListener('change', function() {
+                colorPreview.style.color = this.value;
+                customColor.value = this.value;
+            });
+            
+            customColor.addEventListener('input', function() {
+                colorPreview.style.color = this.value;
+                // Try to find a matching option or set to custom
+                let found = false;
+                for(let i = 0; i < colorSelect.options.length; i++) {
+                    if(colorSelect.options[i].value === this.value) {
+                        colorSelect.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+            });
+            
+            // Initialize table preview
+            updateTablePreview();
+        });
+        
+        function updatePreview() {
+            const editorContent = document.getElementById('editor').value;
+            const previewElement = document.getElementById('preview');
+            
+            // Convert markdown-like syntax to HTML
+            let html = editorContent
+                // Convert headings
+                .replace(/^### (.*$)/gm, '<h3 id="$1">$1</h3>')
+                // Convert paragraphs (but not if it starts with a special tag)
+                .replace(/^(?!<h3|<table|<span).*$/gm, function(match) {
+                    if (match.trim() === '') return '';
+                    return '<p>' + match + '</p>';
+                });
+            
+            previewElement.innerHTML = html;
+            updateOutput();
+        }
+        
+        function updateOutput() {
+            const title = document.getElementById('sectionTitle').value || 'Untitled Section';
+            const id = document.getElementById('sectionId').value || 'untitled-section';
+            
+            // Get the converted HTML from the preview
+            const contentHtml = document.getElementById('preview').innerHTML;
+            
+            // Create the final output HTML with proper structure
+            const outputHtml = 
+`<div class="doc-section" id="${id}">
+    <h1 class="doc-title">${title}</h1>
+    <div class="doc-content">
+        ${contentHtml}
+    </div>
+</div>`;
+            
+            document.getElementById('htmlOutput').value = outputHtml;
+        }
+        
+        function insertHeading() {
+            insertAtCursor('### Heading\n');
+        }
+        
+        function insertParagraph() {
+            insertAtCursor('This is a sample paragraph. Replace with your content.\n\n');
+        }
+        
+        function openTableDialog() {
+            document.getElementById('tableDialog').style.display = 'flex';
+            updateTablePreview();
+        }
+        
+        function closeTableDialog() {
+            document.getElementById('tableDialog').style.display = 'none';
+        }
+        
+        function updateTablePreview() {
+            const rows = parseInt(document.getElementById('tableRows').value) || 3;
+            const cols = parseInt(document.getElementById('tableCols').value) || 3;
+            
+            let tableHtml = '<table style="width:100%; border-collapse: collapse;">\n';
+            
+            // Header row
+            tableHtml += '  <thead>\n    <tr>\n';
+            for (let i = 0; i < cols; i++) {
+                tableHtml += '      <th style="border: 1px solid #555; padding: 8px; background-color: #444;">Header ' + (i+1) + '</th>\n';
+            }
+            tableHtml += '    </tr>\n  </thead>\n  <tbody>\n';
+            
+            // Data rows
+            for (let i = 0; i < rows - 1; i++) {
+                tableHtml += '    <tr' + (i % 2 === 0 ? ' style="background-color: #3a3a3a;"' : '') + '>\n';
+                for (let j = 0; j < cols; j++) {
+                    tableHtml += '      <td style="border: 1px solid #555; padding: 8px;">Row ' + (i+1) + ', Col ' + (j+1) + '</td>\n';
+                }
+                tableHtml += '    </tr>\n';
+            }
+            
+            tableHtml += '  </tbody>\n</table>';
+            
+            document.getElementById('tablePreview').innerHTML = tableHtml;
+        }
+        
+        function insertTable() {
+            const rows = parseInt(document.getElementById('tableRows').value) || 3;
+            const cols = parseInt(document.getElementById('tableCols').value) || 3;
+            
+            let tableHtml = '<table>\n';
+            
+            // Header row
+            tableHtml += '  <thead>\n    <tr>\n';
+            for (let i = 0; i < cols; i++) {
+                tableHtml += '      <th>Header ' + (i+1) + '</th>\n';
+            }
+            tableHtml += '    </tr>\n  </thead>\n  <tbody>\n';
+            
+            // Data rows
+            for (let i = 0; i < rows - 1; i++) {
+                tableHtml += '    <tr>\n';
+                for (let j = 0; j < cols; j++) {
+                    tableHtml += '      <td>Cell ' + (i+1) + '-' + (j+1) + '</td>\n';
+                }
+                tableHtml += '    </tr>\n';
+            }
+            
+            tableHtml += '  </tbody>\n</table>\n\n';
+            
+            insertAtCursor(tableHtml);
+            closeTableDialog();
+        }
+        
+        function insertFontColor() {
+            document.getElementById('colorDialog').style.display = 'flex';
+        }
+        
+        function closeColorDialog() {
+            document.getElementById('colorDialog').style.display = 'none';
+        }
+        
+        function applyFontColor() {
+            const color = document.getElementById('customColor').value;
+            const textarea = document.getElementById('editor');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            
+            // If text is selected, wrap it in a span with the color
+            if (startPos !== endPos) {
+                const selectedText = textarea.value.substring(startPos, endPos);
+                const coloredText = `<span style="color: ${color};">${selectedText}</span>`;
+                
+                textarea.value = textarea.value.substring(0, startPos) + coloredText + textarea.value.substring(endPos);
+                textarea.selectionStart = startPos;
+                textarea.selectionEnd = startPos + coloredText.length;
+            } else {
+                // If no text is selected, insert a placeholder
+                const coloredText = `<span style="color: ${color};">Colored text here</span>`;
+                insertAtCursor(coloredText);
+            }
+            
+            closeColorDialog();
+            updatePreview();
+        }
+        
+        function insertAtCursor(text) {
+            const textarea = document.getElementById('editor');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            const scrollTop = textarea.scrollTop;
+            
+            textarea.value = textarea.value.substring(0, startPos) + text + textarea.value.substring(endPos, textarea.value.length);
+            textarea.focus();
+            textarea.selectionStart = startPos + text.length;
+            textarea.selectionEnd = startPos + text.length;
+            textarea.scrollTop = scrollTop;
+            
+            updatePreview();
+        }
+        
+        function copyToClipboard() {
+            const output = document.getElementById('htmlOutput');
+            output.select();
+            document.execCommand('copy');
+            
+            const message = document.getElementById('clipboardMessage');
+            message.style.display = 'block';
+            setTimeout(function() {
+                message.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

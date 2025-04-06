@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentation</title>
+    <style>
+      :root {
+        --primary-color: #c200cc;
+        --secondary-color: #9900a3;
+        --background-color: #222;
+        --text-color: white;
+        --sidebar-width: 280px;
+        --header-height: 60px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        color: var(--text-color);
+        line-height: 1.6;
+        background-color: #181818;
+        scroll-behavior: smooth;
+      }
+
+      .container {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-height);
+        background-color: #222;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .search-container {
+        margin-left: auto;
+        width: 300px;
+      }
+
+      #search {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: #333;
+        color: white;
+      }
+
+      /* Loading spinner */
+      .loader {
+        border: 5px solid #333;
+        border-radius: 50%;
+        border-top: 5px solid var(--primary-color);
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 40px auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Error message */
+      .error-message {
+        color: #ff6b6b;
+        text-align: center;
+        padding: 20px;
+        background-color: rgba(255, 107, 107, 0.1);
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: var(--sidebar-width);
+        background-color: var(--background-color);
+        border-right: 1px solid #333;
+        padding: 20px;
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        bottom: 0;
+        overflow-y: auto;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .sidebar h3 {
+        margin-bottom: 15px;
+        color: var(--primary-color);
+        text-align: center;
+      }
+
+      .category {
+        margin-bottom: 15px;
+      }
+
+      .category-title {
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        color: white;
+        transition: color 0.3s;
+      }
+
+      .category-title:hover {
+        color: var(--primary-color);
+      }
+
+      .subcategory-list {
+        margin-left: 15px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .subcategory-list.active {
+        max-height: 500px;
+      }
+
+      .subcategory {
+        padding: 12px;
+        margin: 5px 0;
+        cursor: pointer;
+        display: block;
+        text-decoration: none;
+        color: var(--text-color);
+        border: 2px solid var(--primary-color);
+        border-radius: 8px;
+        text-align: center;
+        transition: background 0.3s;
+      }
+
+      .subcategory:hover {
+        background: var(--primary-color);
+        box-shadow: 0 0 15px var(--primary-color);
+      }
+
+      /* Chapter Links */
+      .chapter-list {
+        margin-left: 15px;
+        padding-left: 10px;
+        border-left: 1px solid #444;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .chapter-list.active {
+        max-height: 500px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+
+      .chapter-link {
+        display: block;
+        padding: 5px 0;
+        text-decoration: none;
+        color: #ccc;
+        font-size: 14px;
+        transition: color 0.2s;
+      }
+
+      .chapter-link:hover {
+        color: var(--primary-color);
+      }
+
+      .chevron {
+        transition: transform 0.3s ease;
+      }
+
+      .category-title.active .chevron {
+        transform: rotate(90deg);
+      }
+
+      /* Main Content */
+      .content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        margin-top: var(--header-height);
+        padding: 40px;
+      }
+
+      .doc-section {
+        margin-bottom: 40px;
+        display: none;
+      }
+
+      .doc-section.active {
+        display: block;
+      }
+
+      .doc-title {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #333;
+        color: var(--primary-color);
+      }
+
+      .doc-content {
+        font-size: 16px;
+      }
+
+      .doc-content p {
+        margin-bottom: 15px;
+      }
+
+      .doc-content code {
+        background-color: #333;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+          monospace;
+        font-size: 14px;
+        color: #f8f8f8;
+      }
+
+      .doc-content pre {
+        background-color: #333;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        margin-bottom: 20px;
+        color: #f8f8f8;
+      }
+
+      .doc-content ul {
+        margin-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      .doc-content h3 {
+        color: #c200cc;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        padding-top: 25px; /* Added padding for scroll offset */
+        scroll-margin-top: 80px; /* For smooth scrolling with header offset */
+      }
+
+      /* Mobile responsiveness */
+      .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        margin-right: 15px;
+        color: white;
+      }
+
+      .doc-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        background-color: #222;
+        color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+        border: 1px solid #444;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .doc-content th,
+      .doc-content td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #333;
+      }
+
+      .doc-content th {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .doc-content tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      @media (max-width: 768px) {
+        .menu-toggle {
+          display: block;
+        }
+
+        .sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+          z-index: 99;
+        }
+
+        .sidebar.active {
+          transform: translateX(0);
+        }
+
+        .content {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <button class="menu-toggle">☰</button>
+      <div class="logo">Documentation</div>
+      <div class="search-container">
+        <input type="text" id="search" placeholder="Search documentation..." />
+      </div>
+    </header>
+
+    <div class="container">
+      <aside class="sidebar">
+        <h3>Documentation</h3>
+        <div id="categories-container">
+          <!-- Categories will be loaded from API -->
+          <div class="loader" id="sidebar-loader"></div>
+        </div>
+      </aside>
+
+      <main class="content" id="main-content">
+        <!-- Documentation content will be loaded here -->
+        <div class="doc-section active" id="welcome">
+          <h1 class="doc-title">Einführung</h1>
+          <div class="doc-content">
+            <h3 id="Satzglieder, Wortarten, Formen">
+              Satzglieder, Wortarten, Formen
+            </h3>
+            <span style="color: #037cff">Puella </span
+            ><span style="color: #e20000">cantat</span>. -
+            <span style="color: #037cff">Das Mädchen </span
+            ><span style="color: #e20000">singt</span>.
+            <p>
+              <br />Dies ist der erste lateinische Satz den du hier lernst.
+              „Puella“ heißt „Mädchen“ und „cantat“ heißt „singt“.
+            </p>
+            <p>
+              Was fällt dir auf? Im Lateinischen gibt es keine Artikel (der,
+              die, das)!
+            </p>
+            <span style="color: #037cff">Puella </span>ist in diesem Satz ein
+            <span style="color: #037cff">Substantiv</span>, also das
+            Hauptwort.<span style="color: #e20000">Cantat </span>ist ein
+            <span style="color: #e20000">Verb</span>.
+            <p><br /></p>
+            <p>
+              <b>Satzglieder:</b> In dem Satz gibt es zwei Satzglieder: Das
+              Mädchen | singt.
+            </p>
+            <span style="color: #037cff">Das Mädchen </span>ist ein Subjekt. Das
+            Subjekt ist eines der wichtigsten Satzglieder. Es beschreibt wer
+            oder was handelt. Man erfragt es mit „Wer oder was tut etwas?“.
+            <p>Ein Satzglied kann aus einem oder mehreren Wörtern bestehen.</p>
+            <p><br /></p>
+            <span style="color: #e20000">singt </span>ist ein Prädikat. Es sagt
+            aus, was das Subjekt (Das Mädchen) tut. Man erfragt es mit „Was tut
+            das Mädchen?“. Du musst natürlich das Mädchen mit dem Subjekt
+            ersetzen.
+            <p><br /></p>
+            <p>
+              Ein Satzglied kann aus einem oder mehreren Wörtern bestehen. Ein
+              Satz besteht mindestens aus einem Subjekt und Prädikat.
+            </p>
+            <p></p>
+            <p>
+              <b>Formen:</b> Das Substantiv
+              <span style="color: #037cff">Puella </span>steht im Nominativ.
+              Dieser ist einer von fünf Fällen. Dazu später aber mehr. Da
+              <span style="color: #e20000">cantat </span>ein Verb ist, hat es
+              keinen Kasus.
+            </p>
+            <h3 id="Akkusative und Deklinationen">
+              Akkusative und Deklinationen
+            </h3>
+            <span style="color: #006fff">Servus </span
+            ><span style="color: #fff000">epuum </span
+            ><span style="color: #e20000">videt</span>. -
+            <span style="color: #006fff">Der Sklave </span
+            ><span style="color: #e20000">sieht </span
+            ><span style="color: #fff000">das Pferd</span>.
+            <p>
+              In diesem Satz gibt es diesmal drei Satzglieder: Servus | equum |
+              videt.
+            </p>
+            <span style="color: #006fff">Servus</span>: Ist ein Subjekt wie wir
+            es bereis oben gelernt haben.<br /><br /><span
+              style="color: #fff000"
+              >Equum</span
+            >: Ist ein neuer Kasus. Der „Akkusativ“. Das Akkusativobjekt im Satz
+            ist dazu da, die Handlung, also was der Sklave tut näher zu
+            beschreiben. Anstatt zu sagen, dass der Sklave sieht, kann man mit
+            dem Akkusativobjekt beschreiben, was der Sklave sieht, also das
+            Pferd.<br /><br /><span style="color: #e20000">Videt</span>: Ist das
+            Prädikat, welches wir schon weiter oben kennengelernt haben.<br />
+            <p>
+              Man erkennt das Akkusativobjekt an seiner eigenen Endung. Die
+              Grundform ist „Equus“, aber der Akkusativ von Equus ist „Equum“.
+              Ausserdem gehört „Equus“ in die o-Deklination. Deklinationen sind
+              Gruppen von Wörtern. Es gibt die o-Dekl, die a-Dekl, und die
+              konsonantische Deklination. Die Endungen sind bei allen innerhalb
+              der Gruppen/Deklinationen gleich. Du kannst die Endungen aus
+              dieser Tabelle entnehmen:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Kasus</th>
+                  <th>o-Dekl.</th>
+                  <th>a-Dekl.</th>
+                  <th>kons.-Dekl.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Nominativ</th>
+                  <td>equ-<b>us</b></td>
+                  <td>puell-<b>a</b></td>
+                  <td>pater</td>
+                </tr>
+                <tr>
+                  <th>Akkusativ</th>
+                  <td>equ-<b>um</b></td>
+                  <td>puell-<b>am</b></td>
+                  <td>patr-<b>em</b></td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 id="Das Genus">Das Genus</h3>
+            <p>
+              Neben den Denkinationen kann man ein Nomen auch einem bestimmten
+              Geschlecht zuordnen.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Wort</th>
+                  <th>Geschlecht</th>
+                  <th>Übersetzung</th>
+                  <th>Erklärung</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>equus</td>
+                  <td>m.</td>
+                  <td>das Pferd</td>
+                  <td>m. = Maskulinum</td>
+                </tr>
+                <tr>
+                  <td>puella</td>
+                  <td>f.</td>
+                  <td>das Mädchen</td>
+                  <td>f. = Femininum</td>
+                </tr>
+                <tr>
+                  <td>templum</td>
+                  <td>n.</td>
+                  <td>der Tempel</td>
+                  <td>n. = Neutrum</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Das Geschlecht muss man einfach (genauso wie die Übersetzung) mit
+              lernen. Manchmal stimmt es mit dem Deutschen Geschlecht überein,
+              aber leider nicht immer.
+            </p>
+            <h3 id="Konjugieren">Konjugieren</h3>
+            <p>
+              Konjugieren ist ähnlich wie das Deklinieren, nur dass man hier mit
+              Verben arbeitet. Auch Verben haben unterschiedliche Endungen, die
+              man lernen muss. In den obigen zwei Sätzen handelt es sich um die
+              <b>3. Person Singular Präsens</b>. Diese endet immer auf „-t“
+            </p>
+            <p>
+              Allerdings kann man nicht einfach ein -t hintendran hängen,
+              sondern gibt es auch beim Konjugieren (genauso wie beim
+              Deklinieren) Gruppen. Diese muss man mit lernen, oder man kann sie
+              auch an den Endungen ihreres Stammes erkennen:
+            </p>
+            <p>- a-Konj.: rogat</p>
+            <p>- e-Konj.: videt</p>
+            <p>- i-Konj.: audit</p>
+            <p>- kons.-Konj: quaerit</p>
+            <p>
+              Du kannst die Endungen aus der untenstehenden Tabelle entnehmen:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>a-Konj.</th>
+                  <th>e-Konj.</th>
+                  <th>i-Konj.</th>
+                  <th>kons.-Konj.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>3. Person Singular</th>
+                  <td>roga-<b>t</b></td>
+                  <td>vide-<b>t</b></td>
+                  <td>audi-<b>t</b></td>
+                  <td>quaer-<b>i</b>-<b>t</b></td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Das „-i-“ bei quaerit ist ein Bindevokal. Es erleichtert die
+              Aussprache des Wortes.
+            </p>
+            <p>
+              Achtung: Deklinieren und konjugieren sind zwei komplett
+              unterschiedliche Dinge. Deklinieren tut man mit Nomen, und
+              konjugieren mit Verben!
+            </p>
+            <p>Jetzt können wir den Satz von oben vollständig bestimmen!</p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Servus</th>
+                  <th>equum</th>
+                  <th>videt</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Satzglied</th>
+                  <td>Subjekt</td>
+                  <td>(Akkusativ)Objekt</td>
+                  <td>Prädikat</td>
+                </tr>
+                <tr>
+                  <th>Wortart</th>
+                  <td>Substantiv</td>
+                  <td>Substantiv</td>
+                  <td>Verb</td>
+                </tr>
+                <tr>
+                  <th>Form</th>
+                  <td>Nominativ<br />Singular<br />Maskulinum</td>
+                  <td>Akkusativ<br />Singular<br />Maskulinum</td>
+                  <td>3. Person<br />Singular<br />Präsens</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
