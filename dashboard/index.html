@@ -148,7 +148,7 @@
                     document.getElementById("coins").innerHTML = "Du hast " + data.coins + " Coins";
                     
                     // Jetzt die Projektliste abrufen
-                    const API_URL2 = "https://automatic-acorn-pjjv67wwrr9j29945-3000.app.github.dev/api/fetchProjects";
+                    const API_URL2 = "https://blearn-server.onrender.com/api/fetchProjects";
                     const res2 = await fetch(API_URL2, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
