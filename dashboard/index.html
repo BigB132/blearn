@@ -48,51 +48,147 @@
             padding: 40px;
             text-align: center;
         }
+        .itemlist {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #222;
+            border: 2px solid #c200cc;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .item:hover {
+            box-shadow: 0 0 15px #c200cc;
+        }
+        .viewbtn {
+            background-color: #c200cc;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .viewbtn:hover {
+          background-color: #900099;
+        }
+        .loader {
+            border: 5px solid #333;
+            border-radius: 50%;
+            border-top: 5px solid #c200cc;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }  
     </style>
 </head>
 <body>
     <div class="sidebar">
         <img src="https://i.ibb.co/XZyvjN2B/output-onlinepngtools.png" alt="Logo" class="logo">
         <p id="coins">Coins</p>
-        <a href="../dashboard">Dashboard</a>
-        <a href="./shop">Shop</a>
-        <a href="./earncoins">Earn Coins</a>
-        <a href="./referrals">Referrals</a>
+        <a href="https://blearn.netlify.app/dashboard">Dashboard</a>
+        <a href="https://blearn.netlify.app/shop">Shop</a>
+        <a href="https://blearn.netlify.app/earncoins">Earn Coins</a>
+        <a href="https://blearn.netlify.app/referrals">Referrals</a>
     </div>
     <div class="content">
         <h1>Willkommen im Dashboard</h1>
-        <p>Wähle eine Option aus der Seitenleiste.</p>
+        
+        <div id="loader" class="loader"></div>
+        
+        <div class="itemlist" id="itemlist">
+            <!-- Hier wird die Projektliste dynamisch eingefügt -->
+        </div>
     </div>
     <script>
-      window.onload = async function() {
-        const API_URL = "https://blearn-server.onrender.com/api/auth";
-        const authToken = localStorage.getItem("authToken");
-        const email = localStorage.getItem("email");
-
-        if (!authToken || !email) {
-            window.location.href = "/login"; // Leite zur Login-Seite weiter
-            return;
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
         }
 
-        try {
-            const res = await fetch(API_URL + "/checktoken", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: authToken, email: email })
-            });
+        // Lade-Kreis ausblenden
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
+      
+        window.onload = async function() {
+            showLoader();
+            const API_URL = "https://blearn-server.onrender.com/api/auth";
+            const authToken = localStorage.getItem("authToken");
+            const email = localStorage.getItem("email");
 
-            const data = await res.json();
-            if (res.ok && data.msg === "success") {
-                document.getElementById("coins").innerHTML = "You have " + data.coins + " Coins";
-            } else {
-                localStorage.removeItem("authToken");
-                localStorage.removeItem("email");
-                window.location.href = "/login"; // Bei Fehler zum Login weiterleiten
+            if (!authToken || !email) {
+                window.location.href = "/login"; // Leite zur Login-Seite weiter
+                return;
             }
-        } catch (error) {
-            document.getElementById("coins").innerHTML = "Error while connecting to server";
+
+            try {
+                const res = await fetch(API_URL + "/checktoken", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token: authToken, email: email })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.msg === "success") {
+                    document.getElementById("coins").innerHTML = "Du hast " + data.coins + " Coins";
+                    
+                    // Jetzt die Projektliste abrufen
+                    const API_URL2 = "https://automatic-acorn-pjjv67wwrr9j29945-3000.app.github.dev/api/fetchProjects";
+                    const res2 = await fetch(API_URL2, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ token: authToken, email: email })
+                    });
+
+                    const list = await res2.json();
+
+                    const items = document.getElementById("itemlist");
+                    items.innerHTML = "";
+
+                    // Erstelle für jedes Projekt ein neues Listenelement
+                    list.output.forEach((id, index) => {
+                        const div = document.createElement("div");
+                        div.className = "item";
+
+                        const span = document.createElement("span");
+                        span.textContent = list.names[index];
+
+                        const a = document.createElement("a");
+                        a.className = "viewbtn";
+                        a.href = `https://blearn.netlify.app/modules/${id}`;
+                        a.textContent = "Ansehen";
+
+                        div.appendChild(span);
+                        div.appendChild(a);
+                        items.appendChild(div);
+                    });
+                  
+                    hideLoader();
+                } else {
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("email");
+                    window.location.href = "/login"; // Bei Fehler zum Login weiterleiten
+                }
+            } catch (error) {
+                document.getElementById("coins").innerHTML = "Fehler bei der Verbindung zum Server";
+                alert(error)
+            }
         }
-    };
-  </script>
+    </script>
 </body>
 </html>
