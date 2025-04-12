@@ -274,6 +274,35 @@
             margin-right: 15px;
             color: white;
         }
+      
+        .doc-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            background-color: #222;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+            border: 1px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+          .doc-content th,
+          .doc-content td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+          .doc-content th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+          .doc-content tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
         
         @media (max-width: 768px) {
             .menu-toggle {
@@ -327,7 +356,7 @@
 
     <script>
         // API endpoint for documentation data - CHANGE THIS URL to your actual API server URL
-        const API_URL = 'https://automatic-acorn-pjjv67wwrr9j29945-5000.app.github.dev/api/documentation';
+        const API_URL = 'https://blearn-server.onrender.com/api/documentation';
         
         // Initialize the documentation system
         document.addEventListener('DOMContentLoaded', function() {

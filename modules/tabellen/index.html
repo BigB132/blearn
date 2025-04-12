@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blearn</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #121212;
+        color: #ffffff;
+        text-align: center;
+        padding: 20px;
+    }
+    table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #1e1e1e;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    th, td {
+        padding: 15px;
+        border: 1px solid #333;
+        text-align: center;
+    }
+    th {
+        background-color: #333;
+    }
+    input {
+        background-color: #222;
+        color: white;
+        border: 1px solid #444;
+        padding: 5px;
+        text-align: center;
+        border-radius: 4px;
+    }
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #6200ea;
+        color: white;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #3700b3;
+    }
+    .correct {
+        background-color: #2e7d32 !important;
+    }
+    .incorrect {
+        background-color: #b71c1c !important;
+    }
+    .solution {
+        color: #b71c1c;
+        font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blearn</h1>
+
+  <div id="table-container">Lade Tabelle...</div>
+
+  <button onclick="checkAnswers()">Überprüfen</button>
+
+  <script>
+    const tableContainer = document.getElementById("table-container");
+    let correctAnswers = {};
+    let obj = {};
+    const authToken = localStorage.getItem("authToken");
+    const email = localStorage.getItem("email");
+
+
+    async function loadTable() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      if (!id) {
+        tableContainer.innerHTML = "Error 51";
+        return;
+      }
+
+      try {
+        const response = await fetch("https://blearn-server.onrender.com/api/modules/tabellen", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ id, token: authToken, email })
+        });
+
+        if (!response.ok) throw new Error("Serverfehler");
+
+        const data = await response.json();
+
+        tableContainer.innerHTML = data.html;
+        correctAnswers = data.solution;
+        
+        obj = await eval('(' + correctAnswers + ')');
+        
+      } catch (error) {
+        tableContainer.innerHTML = "Fehler beim Laden der Tabelle." + error;
+        console.error(error);
+      }
+    }
+
+    function checkAnswers() {
+      Object.keys(obj).forEach((id) => {
+          let inputField = document.getElementById(id);
+          
+          let userAnswer = inputField.value.trim().toLowerCase();
+          let correctAnswer = obj[id];
+
+          let solutionSpan = document.getElementById(id + "_solution");
+          if (!solutionSpan) {
+            solutionSpan = document.createElement("span");
+            solutionSpan.id = id + "_solution";
+            solutionSpan.className = "solution";
+            inputField.parentNode.appendChild(document.createElement("br"));
+            inputField.parentNode.appendChild(solutionSpan);
+          }
+
+          if (userAnswer === correctAnswer) {
+            inputField.className = "correct";
+            solutionSpan.textContent = "";
+          } else {
+            inputField.className = "incorrect";
+            solutionSpan.textContent = "Richtige Antwort: " + correctAnswer;
+          }
+      });
+    }
+    
+    loadTable();
+  </script>
+</body>
+</html>
