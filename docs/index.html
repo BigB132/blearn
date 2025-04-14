@@ -579,8 +579,6 @@
             document.getElementById('main-content').appendChild(section);
             
             try {
-                console.log(`Fetching content for: ${sectionId}`);
-              
                 const token = localStorage.getItem("authToken");
                 const email = localStorage.getItem("email");
                 
@@ -593,14 +591,21 @@
                     }
                 });
                 
-                console.log('Content response status:', response.status);
-                
                 if (!response.ok) {
-                    throw new Error(`API returned status: ${response.status} - ${response.statusText}`);
+                    console.log(`API returned status: ${response.status} - ${response.statusText}`);
                 }
                 
                 const data = await response.json();
-                console.log('Received content data length:', data.content.length);
+              
+                if(typeof data.content === "undefined"){
+                  section.innerHTML = `
+                    <h1 class="doc-title">Inhalt nicht freigeschaltet</h1> 
+                    <div class="error-message">
+                      <p>Du hast diesen Inhalt nicht freigeschaltet.</p>
+                    </div>
+                  `;
+                  return;
+                }
                 
                 // Update the section with the fetched content
                 section.innerHTML = data.content;
@@ -609,9 +614,7 @@
                 if (window.innerWidth <= 768) {
                     document.querySelector('.sidebar').classList.remove('active');
                 }
-            } catch (error) {
-                console.error(`Error fetching content for section ${sectionId}:`, error);
-                
+            } catch (error) {console.error(`Error fetching content for section ${sectionId}:`, error);
                 section.innerHTML = `
                     <h1 class="doc-title">Error</h1>
                     <div class="error-message">
